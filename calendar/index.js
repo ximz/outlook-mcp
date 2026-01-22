@@ -7,6 +7,7 @@ const handleCreateEvent = require('./create');
 const handleCancelEvent = require('./cancel');
 const handleDeleteEvent = require('./delete');
 const handleGetSchedule = require('./get-schedule');
+const handleSendMeetingInvites = require('./send-invites');
 
 // Calendar tool definitions
 const calendarTools = [
@@ -46,7 +47,7 @@ const calendarTools = [
   },
   {
     name: "create-event",
-    description: "Creates a new calendar event",
+    description: "Creates a new calendar event. Use draft mode to create without sending invites.",
     inputSchema: {
       type: "object",
       properties: {
@@ -56,11 +57,15 @@ const calendarTools = [
         },
         start: {
           type: "string",
-          description: "The start time of the event in ISO 8601 format"
+          description: "The start time of the event in ISO 8601 format (e.g., '2026-01-26T13:00:00'). Do not include timezone offset - use the timezone parameter instead."
         },
         end: {
           type: "string",
-          description: "The end time of the event in ISO 8601 format"
+          description: "The end time of the event in ISO 8601 format (e.g., '2026-01-26T14:00:00'). Do not include timezone offset - use the timezone parameter instead."
+        },
+        timezone: {
+          type: "string",
+          description: "Windows timezone name for the event. Common values: 'Eastern Standard Time', 'Central Standard Time', 'Mountain Standard Time', 'Pacific Standard Time', 'UTC', 'Central European Standard Time'. Note: Despite 'Standard' in the name, these automatically handle Daylight Saving Time. Defaults to 'Central European Standard Time' if not specified."
         },
         attendees: {
           type: "array",
@@ -72,6 +77,10 @@ const calendarTools = [
         body: {
           type: "string",
           description: "Optional body content for the event"
+        },
+        draft: {
+          type: "boolean",
+          description: "If true, creates the event without sending invites to attendees. Use 'send-meeting-invites' later to add attendees."
         }
       },
       required: ["subject", "start", "end"]
@@ -141,6 +150,28 @@ const calendarTools = [
       required: ["schedules", "startTime", "endTime"]
     },
     handler: handleGetSchedule
+  },
+  {
+    name: "send-meeting-invites",
+    description: "Adds attendees to an existing calendar event and sends meeting invitations. Use this after creating a draft event.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        eventId: {
+          type: "string",
+          description: "The ID of the event to send invites for"
+        },
+        attendees: {
+          type: "array",
+          items: {
+            type: "string"
+          },
+          description: "List of attendee email addresses to invite"
+        }
+      },
+      required: ["eventId", "attendees"]
+    },
+    handler: handleSendMeetingInvites
   }
 ];
 
@@ -151,5 +182,6 @@ module.exports = {
   handleCreateEvent,
   handleCancelEvent,
   handleDeleteEvent,
-  handleGetSchedule
+  handleGetSchedule,
+  handleSendMeetingInvites
 };

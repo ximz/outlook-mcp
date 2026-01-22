@@ -5,6 +5,7 @@ const config = require('../config');
 const { callGraphAPI } = require('../utils/graph-api');
 const { ensureAuthenticated } = require('../auth');
 const { formatEventDateTime } = require('../utils/datetime-helpers');
+const { getMailboxTimezone } = require('../utils/mailbox-settings');
 
 /**
  * Get schedule/free-busy handler
@@ -37,16 +38,19 @@ async function handleGetSchedule(args) {
     // Get access token
     const accessToken = await ensureAuthenticated();
 
+    // Get the user's mailbox timezone
+    const mailboxTimezone = await getMailboxTimezone(accessToken);
+
     // Build request body
     const requestBody = {
       schedules: schedules,
       startTime: {
         dateTime: startTime,
-        timeZone: config.DEFAULT_TIMEZONE
+        timeZone: mailboxTimezone
       },
       endTime: {
         dateTime: endTime,
-        timeZone: config.DEFAULT_TIMEZONE
+        timeZone: mailboxTimezone
       }
     };
 
@@ -123,7 +127,7 @@ async function handleGetSchedule(args) {
     return {
       content: [{
         type: "text",
-        text: `# Free/Busy Schedule\n\nTime range: ${startTime} to ${endTime}\nTimezone: ${config.DEFAULT_TIMEZONE}\n${scheduleResults}`
+        text: `# Free/Busy Schedule\n\nTime range: ${startTime} to ${endTime}\nTimezone: ${mailboxTimezone}\n${scheduleResults}`
       }]
     };
   } catch (error) {

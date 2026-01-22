@@ -14,6 +14,25 @@ function simulateGraphAPIResponse(method, path, data, queryParams) {
   console.error(`Simulating response for: ${method} ${path}`);
   
   if (method === 'GET') {
+    if (path.includes('mailboxSettings')) {
+      // Simulate mailbox settings response
+      return {
+        timeZone: 'Central European Standard Time',
+        language: {
+          locale: 'en-US',
+          displayName: 'English (United States)'
+        },
+        workingHours: {
+          daysOfWeek: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+          startTime: '09:00:00.0000000',
+          endTime: '17:00:00.0000000',
+          timeZone: {
+            name: 'Central European Standard Time'
+          }
+        }
+      };
+    }
+
     if (path.includes('messages') && !path.includes('sendMail')) {
       // Simulate a successful email list/search response
       if (path.includes('/messages/')) {
