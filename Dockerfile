@@ -13,10 +13,10 @@ RUN mkdir -p /app/.msgraph
 ENV HOME=/app
 
 # Copy package files first for better layer caching
-COPY package*.json ./
+COPY package.json yarn.lock ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN yarn install --frozen-lockfile --production
 
 # Copy application code
 COPY . .
