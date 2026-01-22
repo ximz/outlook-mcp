@@ -4,6 +4,7 @@
 const config = require('../config');
 const { callGraphAPI } = require('../utils/graph-api');
 const { ensureAuthenticated } = require('../auth');
+const { formatEventDateTime } = require('../utils/datetime-helpers');
 
 /**
  * Get schedule/free-busy handler
@@ -98,8 +99,8 @@ async function handleGetSchedule(args) {
         result += `\nScheduled items:\n`;
         scheduleItems.forEach(item => {
           const status = item.status || 'unknown';
-          const start = new Date(item.start.dateTime).toLocaleString();
-          const end = new Date(item.end.dateTime).toLocaleString();
+          const start = formatEventDateTime(item.start);
+          const end = formatEventDateTime(item.end);
           const subject = item.subject || '(No subject)';
           const location = item.location || '';
 

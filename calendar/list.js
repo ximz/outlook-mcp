@@ -4,6 +4,7 @@
 const config = require('../config');
 const { callGraphAPI } = require('../utils/graph-api');
 const { ensureAuthenticated } = require('../auth');
+const { formatEventDateTime } = require('../utils/datetime-helpers');
 
 /**
  * List events handler
@@ -42,11 +43,11 @@ async function handleListEvents(args) {
     
     // Format results
     const eventList = response.value.map((event, index) => {
-      const startDate = new Date(event.start.dateTime).toLocaleString(event.start.timeZone);
-      const endDate = new Date(event.end.dateTime).toLocaleString(event.end.timeZone);
-      const location = event.location.displayName || 'No location';
-      
-      return `${index + 1}. ${event.subject} - Location: ${location}\nStart: ${startDate}\nEnd: ${endDate}\nSubject: ${event.subject}\nSummary: ${event.bodyPreview}\nID: ${event.id}\n`;
+      const startDate = formatEventDateTime(event.start);
+      const endDate = formatEventDateTime(event.end);
+      const location = event.location?.displayName || 'No location';
+
+      return `${index + 1}. ${event.subject} - Location: ${location}\nStart: ${startDate}\nEnd: ${endDate}\nSummary: ${event.bodyPreview}\nID: ${event.id}\n`;
     }).join("\n");
     
     return {
