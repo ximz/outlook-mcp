@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  outlook-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: outlook-mcp:latest
+    
+    # Load environment variables from .env file
+    # This injects MS_CLIENT_ID and MS_CLIENT_SECRET into the container
+    env_file:
+      - .env
+    
+    # Expose OAuth auth server port
+    # Visit http://localhost:3333/auth to authenticate
+    ports:
+      - "3333:3333"
+    
+    # Mount token directory from host
+    # MSGRAPH_TOKEN_PATH is set in .env (e.g., ~/.msgraph or C:/Users/YourName/.msgraph)
+    volumes:
+      - ${MSGRAPH_TOKEN_PATH}:/app/.msgraph:rw
+    
+    # MCP uses stdio transport - run interactively
+    stdin_open: true
+    tty: true
