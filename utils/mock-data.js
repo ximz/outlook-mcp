@@ -133,6 +133,54 @@ function simulateGraphAPIResponse(method, path, data, queryParams) {
   } else if (method === 'POST' && path.includes('sendMail')) {
     // Simulate a successful email send
     return {};
+  } else if (method === 'POST' && path.includes('getSchedule')) {
+    // Simulate a free/busy schedule response
+    const schedules = data?.schedules || ['user@example.com'];
+    const startTime = data?.startTime?.dateTime || new Date().toISOString();
+    const endTime = data?.endTime?.dateTime || new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString();
+
+    return {
+      value: schedules.map(email => ({
+        scheduleId: email,
+        availabilityView: '0000222200002222000022220000',
+        workingHours: {
+          startTime: '09:00:00.0000000',
+          endTime: '17:00:00.0000000',
+          daysOfWeek: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+          timeZone: {
+            name: 'Central European Standard Time'
+          }
+        },
+        scheduleItems: [
+          {
+            status: 'busy',
+            start: {
+              dateTime: new Date(new Date(startTime).getTime() + 2 * 60 * 60 * 1000).toISOString(),
+              timeZone: 'Central European Standard Time'
+            },
+            end: {
+              dateTime: new Date(new Date(startTime).getTime() + 3 * 60 * 60 * 1000).toISOString(),
+              timeZone: 'Central European Standard Time'
+            },
+            subject: 'Team Meeting',
+            location: 'Conference Room A'
+          },
+          {
+            status: 'tentative',
+            start: {
+              dateTime: new Date(new Date(startTime).getTime() + 5 * 60 * 60 * 1000).toISOString(),
+              timeZone: 'Central European Standard Time'
+            },
+            end: {
+              dateTime: new Date(new Date(startTime).getTime() + 6 * 60 * 60 * 1000).toISOString(),
+              timeZone: 'Central European Standard Time'
+            },
+            subject: 'Project Review',
+            location: 'Online'
+          }
+        ]
+      }))
+    };
   }
   
   // If we get here, we don't have a simulation for this endpoint

@@ -6,6 +6,7 @@ const handleDeclineEvent = require('./decline');
 const handleCreateEvent = require('./create');
 const handleCancelEvent = require('./cancel');
 const handleDeleteEvent = require('./delete');
+const handleGetSchedule = require('./get-schedule');
 
 // Calendar tool definitions
 const calendarTools = [
@@ -110,6 +111,36 @@ const calendarTools = [
       required: ["eventId"]
     },
     handler: handleDeleteEvent
+  },
+  {
+    name: "get-schedule",
+    description: "Gets the free/busy schedule for a list of users. Returns availability information for up to 20 email addresses within a specified time range.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        schedules: {
+          type: "array",
+          items: {
+            type: "string"
+          },
+          description: "List of email addresses to get availability for (max 20)"
+        },
+        startTime: {
+          type: "string",
+          description: "Start of the time range in ISO 8601 format (e.g., '2024-01-15T09:00:00')"
+        },
+        endTime: {
+          type: "string",
+          description: "End of the time range in ISO 8601 format (e.g., '2024-01-15T18:00:00')"
+        },
+        availabilityViewInterval: {
+          type: "number",
+          description: "Optional duration of time slots in minutes (default: 30)"
+        }
+      },
+      required: ["schedules", "startTime", "endTime"]
+    },
+    handler: handleGetSchedule
   }
 ];
 
@@ -119,5 +150,6 @@ module.exports = {
   handleDeclineEvent,
   handleCreateEvent,
   handleCancelEvent,
-  handleDeleteEvent
+  handleDeleteEvent,
+  handleGetSchedule
 };
